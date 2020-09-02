@@ -14,7 +14,7 @@ class TestBillMember(object):
             ('member-123', 'account-abc', 'null'),
         )
     )
-    def test_calculate_bill_for_august(
+    def test_calculate_bill_for_august_2017(
         self,
         member_id,
         account_id,
