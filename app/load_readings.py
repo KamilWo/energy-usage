@@ -19,7 +19,7 @@ def get_readings():
 
         with open(file_path, 'r') as f:
             readings = json.load(f)
-    except FileNotFoundError as fe:
+    except FileNotFoundError:
         logging.error(f'Error: {file_path} was not found.')
     except IOError:
         logging.error(f'Error: Could not read {file_path}.')

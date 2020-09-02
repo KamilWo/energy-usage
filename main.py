@@ -4,8 +4,10 @@ import os.path
 from app.bill_member import calculate_and_print_bill, prepare_database
 from typing import Optional
 
+# Sphinx was causing an error and the path to the log file has to be absolute.
 logging.basicConfig(
-    filename=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs', 'bulb.log'),
+    filename=os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), 'logs', 'bulb.log'),
     level=logging.DEBUG
 )
 logger = logging.getLogger('Bulb')
@@ -29,8 +31,8 @@ def parse_arguments():
     parser.add_argument('--bill_date', type=str,
                         help='ISO standard formatted date for UTC timezone.')
     parser.add_argument('--energy_source', type=str,
-                        help='Type of the energy source, can be: `electricity` '
-                             'or `gas`. If none provided, '
+                        help='Type of the energy source, can be: '
+                             '`electricity` or `gas`. If none provided, '
                              '`electricity` will be assumed.')
     return parser.parse_args()
 

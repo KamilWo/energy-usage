@@ -29,7 +29,7 @@ def prepare_database() -> BillDatabase:
     # Initialise database
     db = BillDatabase(
         members=set(),
-        accounts=cict(),
+        accounts=dict(),
         electricity_bills=dict(),
         gas_bills=dict()
     )
@@ -98,7 +98,8 @@ def calculate_bill(member_id: Optional[str] = None,
     ):
         logging.error(f'UnknownAccount error occurred for member '
                       f'{member_id}: account {account_id} doesn\'t exist')
-        raise UnknownAccount(f'Account {account_id} is unknown or not allowed.')
+        raise UnknownAccount(f'Account {account_id} is unknown '
+                             f'or not allowed.')
 
     bill_date = datetime.strptime(bill_date, '%Y-%m-%d')
 
@@ -130,7 +131,8 @@ def calculate_and_print_bill(member_id: str, account: str, bill_date: str,
     :param str member_id: Customer
     :param str account: Account
     :param str bill_date: Date of the bill
-    :param str billing_type: Type of the billing, can be electricity or gas only.
+    :param str billing_type: Type of the billing, can be `electricity`
+        or `gas`.
 
     :returns: none
     """

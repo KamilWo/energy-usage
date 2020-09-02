@@ -45,7 +45,8 @@ def count_month_days(given_date: str):
     try:
         given_date = datetime.strptime(given_date, '%Y-%m-%d')
     except ValueError:
-        logging.error(f'IncorrectDateType error occurred for bill_date: {given_date}.')
+        logging.error(f'IncorrectDateType error occurred '
+                      f'for bill_date: {given_date}.')
         raise IncorrectDateType("Incorrect date format, should be YYYY-MM-DD.")
     _, amount_of_days = monthrange(given_date.year, given_date.month)
     return amount_of_days
@@ -62,9 +63,9 @@ def end_of_month_date(given_date: str) -> date:
     try:
         curr_date = date.fromisoformat(given_date)
     except ValueError:
-        logging.error(f'Provided date is incorrect format: {given_date}.')
-        raise IncorrectDateType(f"Provided date is incorrect format: {given_date}")
+        logging.error(f'Provided date has incorrect format: {given_date}.')
+        raise IncorrectDateType(f"Provided date has incorrect "
+                                f"format: {given_date}")
     return curr_date.replace(
         day=monthrange(curr_date.year, curr_date.month)[1]
     )
-

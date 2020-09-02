@@ -43,7 +43,9 @@ class BaseBill:
 
 @dataclass
 class ElectricityBill(BaseBill):
-    """ Represents Bulb Customer's electricity bill for the given date. """
+    """ Represents Bulb Customer's electricity bill for
+        the given date.
+    """
 
     billing_type: str = "electricity"
 
@@ -105,7 +107,8 @@ class BillDatabase:
         :param str member_id: Provided member_id string.
         :param str account_id: Provided account_id string.
 
-        :returns: True if Member is in the database, False if doesn't exist.
+        :returns: True if Member is in the database,
+            False if doesn't exist.
         :rtype: bool
         """
         return member_id in self.accounts.keys() and \
@@ -165,24 +168,27 @@ class BillDatabase:
                 prev_month_date = ""
                 prev_month_units = 0
                 for er in electricity_readings:
-                    # It's necessary to find first month's units and follow them linearly
+                    # It's necessary to find first month's units
+                    # and follow them linearly
                     if prev_reading:
-                        prev_month_date, prev_month_units = self.calculate_units(
-                            prev_eom_cumulative=prev_month_units,
-                            prev_eom_date=prev_month_date,
-                            prev_cumulative=prev_reading['cumulative'],
-                            prev_date=prev_reading['readingDate'],
-                            current_cumulative=er['cumulative'],
-                            current_date=er['readingDate'],
-                            days_in_month=count_month_days(
-                                given_date=er['readingDate']
+                        prev_month_date, prev_month_units = \
+                            self.calculate_units(
+                                prev_eom_cumulative=prev_month_units,
+                                prev_eom_date=prev_month_date,
+                                prev_cumulative=prev_reading['cumulative'],
+                                prev_date=prev_reading['readingDate'],
+                                current_cumulative=er['cumulative'],
+                                current_date=er['readingDate'],
+                                days_in_month=count_month_days(
+                                    given_date=er['readingDate']
+                                )
                             )
-                        )
                         self.add_electricity_bill(
                             ElectricityBill(
                                 member=member,
                                 account=account,
-                                bill_date=date.fromisoformat(er['readingDate']),
+                                bill_date=date.fromisoformat(
+                                    er['readingDate']),
                                 units=0,
                                 total=0.0
                             )
@@ -194,24 +200,27 @@ class BillDatabase:
                 prev_month_date = ""
                 prev_month_units = 0
                 for gr in gas_readings:
-                    # It's necessary to find first month's units and follow them linearly
+                    # It's necessary to find first month's units
+                    # and follow them linearly
                     if prev_reading:
-                        prev_month_date, prev_month_units = self.calculate_units(
-                            prev_eom_cumulative=prev_month_units,
-                            prev_eom_date=prev_month_date,
-                            prev_cumulative=prev_reading['cumulative'],
-                            prev_date=prev_reading['readingDate'],
-                            current_cumulative=gr['cumulative'],
-                            current_date=gr['readingDate'],
-                            days_in_month=count_month_days(
-                                given_date=gr['readingDate']
+                        prev_month_date, prev_month_units = \
+                            self.calculate_units(
+                                prev_eom_cumulative=prev_month_units,
+                                prev_eom_date=prev_month_date,
+                                prev_cumulative=prev_reading['cumulative'],
+                                prev_date=prev_reading['readingDate'],
+                                current_cumulative=gr['cumulative'],
+                                current_date=gr['readingDate'],
+                                days_in_month=count_month_days(
+                                    given_date=gr['readingDate']
+                                )
                             )
-                        )
                     self.add_gas_bill(
                         GasBill(
                             member=member,
                             account=account,
-                            bill_date=date.fromisoformat(gr['readingDate']),
+                            bill_date=date.fromisoformat(
+                                gr['readingDate']),
                             units=0,
                             total=0.0
                         )
@@ -257,8 +266,9 @@ class BillDatabase:
         units = units_delta / delta.days * days_in_month
         return eom_date, units
 
-    def get_bills_amount(self, energy_type: str, member_id: str, account_id: str,
-                         given_date: date, all_accounts=None) -> float:
+    def get_bills_amount(self, energy_type: str, member_id: str,
+                         account_id: str, given_date: date,
+                         all_accounts=None) -> float:
         """ Retrieve electricity bills for member and account.
         :param energy_type: Type of source of energy for which bill
             is being calculated.
