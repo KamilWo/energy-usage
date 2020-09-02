@@ -99,7 +99,7 @@ class BillDatabase:
 
         :returns: None
         """
-        self.accounts[member_id] += [account]
+        self.accounts.update({member_id: account})
 
     def is_member_account(self, member_id: str, account_id: str) -> bool:
         """ Checking if Account exists for specific Member.
@@ -176,11 +176,11 @@ class BillDatabase:
                                 prev_eom_cumulative=prev_month_units,
                                 prev_eom_date=prev_month_date,
                                 prev_cumulative=prev_reading['cumulative'],
-                                prev_date=prev_reading['readingDate'],
+                                prev_date=prev_reading['readingDate'][:10],
                                 current_cumulative=er['cumulative'],
-                                current_date=er['readingDate'],
+                                current_date=er['readingDate'][:10],
                                 days_in_month=count_month_days(
-                                    given_date=er['readingDate']
+                                    given_date=er['readingDate'][:10]
                                 )
                             )
                         self.add_electricity_bill(
@@ -188,7 +188,7 @@ class BillDatabase:
                                 member=member,
                                 account=account,
                                 bill_date=date.fromisoformat(
-                                    er['readingDate']),
+                                    er['readingDate'][:10]),
                                 units=0,
                                 total=0.0
                             )
@@ -210,9 +210,9 @@ class BillDatabase:
                                 prev_cumulative=prev_reading['cumulative'],
                                 prev_date=prev_reading['readingDate'],
                                 current_cumulative=gr['cumulative'],
-                                current_date=gr['readingDate'],
+                                current_date=gr['readingDate'][:10],
                                 days_in_month=count_month_days(
-                                    given_date=gr['readingDate']
+                                    given_date=gr['readingDate'][:10]
                                 )
                             )
                     self.add_gas_bill(
@@ -253,10 +253,10 @@ class BillDatabase:
             units_delta = current_cumulative - prev_cumulative
 
         curr_date = datetime.combine(
-            date.fromisoformat(current_date), datetime.min.time()
+            date.fromisoformat(current_date[:10]), datetime.min.time()
         )
         delta = curr_date - datetime.combine(
-            date.fromisoformat(prev_date),
+            date.fromisoformat(prev_date[:10]),
             datetime.min.time()
         )
         # End of the month date
@@ -270,6 +270,7 @@ class BillDatabase:
                          account_id: str, given_date: date,
                          all_accounts=None) -> float:
         """ Retrieve electricity bills for member and account.
+
         :param energy_type: Type of source of energy for which bill
             is being calculated.
         :param member_id: Member identifier.

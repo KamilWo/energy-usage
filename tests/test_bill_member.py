@@ -8,8 +8,10 @@ class TestBillMember(object):
     @pytest.mark.parametrize(
         ('member_id', 'account_id', 'bill_date'),
         (
+            ('member-123', 'account-abc', '2017-07-31'),
             ('member-123', 'ALL', '2017-08-31'),
             ('member-123', 'account-abc', '2017-09-30'),
+            ('member-123', 'account-abc', '2017-10-31'),
             ('member-123', 'ALL', 'None'),
             ('member-123', 'account-abc', 'null'),
         )
@@ -25,12 +27,16 @@ class TestBillMember(object):
             account_id=account_id,
             bill_date=bill_date
         )
-        if bill_date == '2017-08-31':
+        if bill_date == '2017-07-31':
             assert amount == 27.57
             assert kwh == 167
-        if bill_date == '2017-09-31':
-            assert amount == 0
-            assert kwh == 0
+        if bill_date == '2017-09-30':
+            assert amount == 29.59
+            assert kwh == 186
         if bill_date == '2017-10-31':
             assert amount == 27.57
-            assert kwh == 167
+            assert kwh == 43
+        if bill_date == 'None':
+            pass
+        if bill_date == 'null':
+            pass

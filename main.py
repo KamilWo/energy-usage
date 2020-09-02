@@ -1,7 +1,7 @@
 import logging
 import os.path
 
-from app.bill_member import calculate_and_print_bill, prepare_database
+from app.bill_member import calculate_and_print_bill
 from typing import Optional
 
 # Sphinx was causing an error and the path to the log file has to be absolute.
@@ -61,7 +61,6 @@ def main(
 
 if __name__ == '__main__':
     args = parse_arguments()
-    prepare_database()
     main(
         member_id=args.member_id,
         account_id=args.account_id,

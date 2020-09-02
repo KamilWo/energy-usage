@@ -43,7 +43,7 @@ def count_month_days(given_date: str):
     :raises IncorrectDateType when bill_date string can't be parsed.
     """
     try:
-        given_date = datetime.strptime(given_date, '%Y-%m-%d')
+        given_date = date.fromisoformat(given_date[:10])
     except ValueError:
         logging.error(f'IncorrectDateType error occurred '
                       f'for bill_date: {given_date}.')

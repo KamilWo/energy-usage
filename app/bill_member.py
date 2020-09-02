@@ -20,7 +20,7 @@ from .utils import apply_tariff, count_month_days
 def prepare_database() -> BillDatabase:
     """ Prepares database from readings.
 
-    :returns: Database of the bills
+    :returns: Database of the bills.
     :rtype: BillDatabase
     """
     # Retrieve readings
@@ -28,7 +28,7 @@ def prepare_database() -> BillDatabase:
 
     # Initialise database
     db = BillDatabase(
-        members=set(),
+        members={},
         accounts=dict(),
         electricity_bills=dict(),
         gas_bills=dict()
@@ -42,6 +42,8 @@ def prepare_database() -> BillDatabase:
             name=member_id,
             accounts=set()
         )
+        db.add_member(member=new_member)
+
         for accounts in member:
             for account_id in accounts.keys():
                 new_account = Account(
@@ -66,13 +68,13 @@ def prepare_database() -> BillDatabase:
 def calculate_bill(member_id: Optional[str] = None,
                    account_id: Optional[str] = None,
                    bill_date: Optional[str] = None,
-                   energy_type='electricity') -> (float, float):
+                   energy_source='electricity') -> (float, float):
     """ Computes the customer bill.
 
     :param str member_id: Given Customer (member) identifier.
     :param str account_id: Given Account identifier.
     :param str bill_date: Date of the bill (end of the month).
-    :param str energy_type: Type of the billing, can be `electricity`
+    :param str energy_source: Type of the energy source, can be `electricity`
         or `gas`.
 
     :returns: Amount and kwh values.
@@ -84,6 +86,7 @@ def calculate_bill(member_id: Optional[str] = None,
     """
 
     db = prepare_database()
+    print(db)
 
     # Handling unknown members
     if not db.is_member(member_id):
@@ -101,12 +104,18 @@ def calculate_bill(member_id: Optional[str] = None,
         raise UnknownAccount(f'Account {account_id} is unknown '
                              f'or not allowed.')
 
+    if energy_source not in ('electricity', 'gas'):
+        logging.error(f'WrongBillingType error occurred for billing '
+                      f'type: {energy_source}')
+        raise UnknownBillingType('Acceptable billing type is only '
+                                 '`electricity` or `gas`.')
+
     bill_date = datetime.strptime(bill_date, '%Y-%m-%d')
 
     units = 0
     amount_of_days = 0
     db.get_bills_amount(
-        energy_type=energy_type,
+        energy_type=energy_source,
         member_id=member_id,
         account_id=account_id,
         given_date=bill_date,
@@ -122,7 +131,7 @@ def calculate_bill(member_id: Optional[str] = None,
 
 
 def calculate_and_print_bill(member_id: str, account: str, bill_date: str,
-                             billing_type: str) -> None:
+                             energy_source: str) -> None:
     """ Computes the customer bill and then prints the result to screen.
 
     Account is an optional argument - I could bill for one account or many.
@@ -131,21 +140,17 @@ def calculate_and_print_bill(member_id: str, account: str, bill_date: str,
     :param str member_id: Customer
     :param str account: Account
     :param str bill_date: Date of the bill
-    :param str billing_type: Type of the billing, can be `electricity`
+    :param str energy_source: Type of the billing, can be `electricity`
         or `gas`.
 
-    :returns: none
+    :returns: None
     """
-    if billing_type not in ('electricity', 'gas'):
-        logging.error(f'WrongBillingType error occurred for billing '
-                      f'type: {billing_type}')
-        raise UnknownBillingType('Acceptable billing type is only '
-                                 '`electricity` or `gas`.')
 
     member_id = member_id or 'member-123'
     bill_date = bill_date or '2017-08-31'
     account = account or 'ALL'
+    energy_source = energy_source or 'electricity'
     amount, kwh = calculate_bill(member_id, account, bill_date)
     print(f'Hello {member_id}!')
-    print(f'Your bill for {account} on {bill_date} is £{amount}')
+    print(f'Your {energy_source} bill for {account} on {bill_date} is £{amount}')
     print(f'based on {kwh}kWh of usage in the last month.')

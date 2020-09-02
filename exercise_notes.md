@@ -10,6 +10,8 @@ Break: 12:45-13:10
 
 Break: 15:00-15:40
 
+Break: 17:00-18:00
+
 ### Time ended: ..:..
 
 ## Notes:
