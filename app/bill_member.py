@@ -28,8 +28,8 @@ def prepare_database() -> BillDatabase:
 
     # Initialise database
     db = BillDatabase(
-        members={},
-        accounts=dict(),
+        members=set(),
+        accounts=list(),
         electricity_bills=dict(),
         gas_bills=dict()
     )
@@ -50,8 +50,7 @@ def prepare_database() -> BillDatabase:
                         account_id=account_id,
                         member_id=member_id
                     )
-                db.add_account_for_member(
-                    member_id=member_id,
+                db.add_account(
                     account=new_account
                 )
                 for sources in accounts[account_id]:
@@ -86,7 +85,6 @@ def calculate_bill(member_id: Optional[str] = None,
     """
 
     db = prepare_database()
-    print(db)
 
     # Handling unknown members
     if not db.is_member(member_id):
@@ -95,10 +93,8 @@ def calculate_bill(member_id: Optional[str] = None,
         raise UnknownMember(f'Member {member_id} is unknown.')
 
     # Handling unknown accounts
-    if account_id != 'ALL' and not db.is_member_account(
-        member_id=member_id,
-        account_id=account_id
-    ):
+    if account_id.upper() != 'ALL' and \
+            not db.is_account(account_id=account_id):
         logging.error(f'UnknownAccount error occurred for member '
                       f'{member_id}: account {account_id} doesn\'t exist')
         raise UnknownAccount(f'Account {account_id} is unknown '
@@ -110,16 +106,14 @@ def calculate_bill(member_id: Optional[str] = None,
         raise UnknownBillingType('Acceptable billing type is only '
                                  '`electricity` or `gas`.')
 
-    bill_date = datetime.strptime(bill_date, '%Y-%m-%d')
-
     units = 0
     amount_of_days = 0
     db.get_bills_amount(
-        energy_type=energy_source,
+        energy_source=energy_source,
         member_id=member_id,
         account_id=account_id,
-        given_date=bill_date,
-        all_accounts=account_id
+        given_date=date.fromisoformat(bill_date),
+        all_accounts=account_id == 'ALL' and 'ALL' or None
     )
 
     # Rounding bill result to full £
@@ -152,5 +146,6 @@ def calculate_and_print_bill(member_id: str, account: str, bill_date: str,
     energy_source = energy_source or 'electricity'
     amount, kwh = calculate_bill(member_id, account, bill_date)
     print(f'Hello {member_id}!')
-    print(f'Your {energy_source} bill for {account} on {bill_date} is £{amount}')
+    print(f'Your {energy_source} bill for {account} on {bill_date} is '
+          f'£{amount}')
     print(f'based on {kwh}kWh of usage in the last month.')

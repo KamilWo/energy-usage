@@ -12,8 +12,6 @@ class TestBillMember(object):
             ('member-123', 'ALL', '2017-08-31'),
             ('member-123', 'account-abc', '2017-09-30'),
             ('member-123', 'account-abc', '2017-10-31'),
-            ('member-123', 'ALL', 'None'),
-            ('member-123', 'account-abc', 'null'),
         )
     )
     def test_calculate_bill_for_august_2017(
@@ -34,9 +32,5 @@ class TestBillMember(object):
             assert amount == 29.59
             assert kwh == 186
         if bill_date == '2017-10-31':
-            assert amount == 27.57
+            assert amount == 12.75
             assert kwh == 43
-        if bill_date == 'None':
-            pass
-        if bill_date == 'null':
-            pass

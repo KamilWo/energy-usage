@@ -1,12 +1,12 @@
-import datetime
+from datetime import datetime
 import pytest
 
 from app.models import (
     Account,
     BillDatabase,
-    Member,
     ElectricityBill,
-    GasBill
+    GasBill,
+    Member,
 )
 
 # TODO: write more tests
@@ -42,19 +42,15 @@ class TestModels(object):
 
         db = BillDatabase(
             members={member},
-            accounts=dict(),
+            accounts=list(),
             electricity_bills={},
             gas_bills={}
         )
         for account in accounts:
-            db.add_account_for_member(
-                member_id=member_id,
+            db.add_account(
                 account=account
             )
 
-        print(db.get_member_accounts(
-            member_id=member_id
-        ))
         if accounts:
             assert len(db.get_member_accounts(
                 member_id=member_id
