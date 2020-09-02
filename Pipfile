@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+coverage = "==5.2.1"
+flake8 = "*"
+pycodestyle = "*"
+pytest = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"
+
+[packages]
+python-dotenv = "*"
+faker = "*"
+sqlalchemy = "*"
+flask = "*"
+
+[requires]
+python_version = "3.8"
