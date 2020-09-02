@@ -1,14 +1,18 @@
-Time started: 2020-09-01 21:37
-First part ended: 2020-09-02 02:37
+# Quality logs and notes
 
-Second part started: 2020-09-02 07:09
+### Time started: 2020-09-01 21:37
+### First part ended: 2020-09-02 02:37
+
+### Second part started: 2020-09-02 07:09
 Break: 09:30-09:55
+
 Break: 12:45-13:10
+
 Break: 15:00-15:40
 
-Time ended: ..:..
+### Time ended: ..:..
 
-Notes:
+## Notes:
 
 This was my motivation to change the file locations a little bit: 
     
@@ -31,9 +35,10 @@ All you need to do is to make sure requirements are installed and
 
 Updated `load_readings.py` for handling errors with `readings.json` file.
 
-Using tariff for calculations.
+Using `tariff.py` const `BULB_TARIFF` for bill calculations.
 
 Create classes and their functions in `models.py`.
 
 Calculate monthly usage.
+
 Prepare for gas billing.
