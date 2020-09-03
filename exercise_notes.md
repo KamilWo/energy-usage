@@ -16,7 +16,7 @@ Break: 17:00-18:00
 
 ### Third part started: 2020-09-03 14:50
 
-### Time ended: 2020-09-32 16:25
+### Time ended: 2020-09-03 16:25
 
 ## Notes:
 
