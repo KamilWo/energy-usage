@@ -16,7 +16,7 @@ class Member:
 
     member_id: str
     accounts: set
-    name: str = ''
+    name: str = ""
 
     def __hash__(self):
         return hash(self.member_id)
@@ -68,10 +68,10 @@ class GasBill(BaseBill):
 class BillDatabase:
     """ Bulb bills database. """
 
-    members: set
-    accounts: list
-    electricity_bills: dict
-    gas_bills: dict
+    members: set = field(default_factory=set)
+    accounts: list = field(default_factory=list)
+    electricity_bills: dict = field(default_factory=dict)
+    gas_bills: dict = field(default_factory=dict)
 
     def add_member(self, member: Member) -> None:
         """ Stores Member in the database.

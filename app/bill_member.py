@@ -27,12 +27,7 @@ def prepare_database() -> BillDatabase:
     readings = get_readings()
 
     # Initialise database
-    db = BillDatabase(
-        members=set(),
-        accounts=list(),
-        electricity_bills=dict(),
-        gas_bills=dict()
-    )
+    db = BillDatabase()
 
     # Loop through the readings and add all the objects to the database
     for member_id in readings:
