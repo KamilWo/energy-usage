@@ -1,7 +1,7 @@
 import logging
 
 from calendar import monthrange
-from datetime import date, datetime
+from datetime import date
 from .exceptions import IncorrectDateType
 from .tariff import BULB_TARIFF
 

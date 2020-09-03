@@ -244,7 +244,7 @@ class BillDatabase:
                            prev_date.month)[1]
         )
         units_delta = current_reading['cumulative'] - \
-                      previous_reading['cumulative']
+            previous_reading['cumulative']
         return eom_date, units_delta, days_delta
 
     def get_bills_amount(self, energy_source: str, member_id: str,
