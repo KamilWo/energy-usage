@@ -12,6 +12,14 @@ app.bill\_member module
    :undoc-members:
    :show-inheritance:
 
+app.consts module
+-----------------
+
+.. automodule:: app.consts
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 app.exceptions module
 ---------------------
 
