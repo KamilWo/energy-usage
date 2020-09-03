@@ -1,7 +1,5 @@
 import logging
 
-from collections import defaultdict
-from datetime import datetime, date
 from .exceptions import (
     UnknownAccount,
     UnknownBillingType,
@@ -14,7 +12,6 @@ from .models import (
     Member
 )
 from typing import Optional
-from .utils import apply_tariff, count_month_days
 
 
 def prepare_database() -> BillDatabase:
@@ -101,22 +98,16 @@ def calculate_bill(member_id: Optional[str] = None,
         raise UnknownBillingType('Acceptable billing type is only '
                                  '`electricity` or `gas`.')
 
-    units = 0
-    amount_of_days = 0
-    db.get_bills_amount(
+    total, units = db.get_bills_amount(
         energy_source=energy_source,
         member_id=member_id,
         account_id=account_id,
-        given_date=date.fromisoformat(bill_date),
+        given_date=bill_date,
         all_accounts=account_id == 'ALL' and 'ALL' or None
     )
 
     # Rounding bill result to full £
-    return round(apply_tariff(
-        energy_source='electricity',
-        units=units,
-        amount_of_days=amount_of_days)
-    ), units
+    return total, units
 
 
 def calculate_and_print_bill(member_id: str, account: str, bill_date: str,

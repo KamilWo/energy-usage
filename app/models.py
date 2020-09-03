@@ -1,9 +1,8 @@
 from calendar import monthrange
-from collections import defaultdict
-from datetime import date, datetime
+from .consts import DATE_FORMAT
+from datetime import date
 from dataclasses import dataclass, field
-from typing import Dict, Optional
-from .utils import count_month_days, apply_tariff
+from .utils import apply_tariff
 
 
 # TODO: in v2.0 I would like to use database framework (e.g. SQLAlchemy)
@@ -44,7 +43,7 @@ class BaseBill:
         return hash((
             self.member.member_id,
             self.account.account_id,
-            self.bill_date
+            self.bill_date.strftime(DATE_FORMAT)
         ))
 
 
@@ -184,7 +183,7 @@ class BillDatabase:
                             ElectricityBill(
                                 member=member,
                                 account=account,
-                                bill_date=eom_date,
+                                bill_date=eom_date.strftime(DATE_FORMAT),
                                 units=units_delta,
                                 total=apply_tariff(
                                     energy_source='electricity',
@@ -249,8 +248,8 @@ class BillDatabase:
         return eom_date, units_delta, days_delta
 
     def get_bills_amount(self, energy_source: str, member_id: str,
-                         account_id: str, given_date: date,
-                         all_accounts=None) -> float:
+                         account_id: str, given_date: str,
+                         all_accounts=None) -> tuple:
         """ Retrieve electricity bills for member and account.
 
         :param energy_source: Type of source of energy for which bill
@@ -261,23 +260,33 @@ class BillDatabase:
         :param all_accounts: If specified, all accounts for the member
             will be calculated.
 
-        :returns: List of bills
+        :returns: Total bill value and total number of units
+        :rtype: tuple
         """
 
         total = 0.0
+        units = 0
         if energy_source == 'electricity':
             if all_accounts:
                 for account_id in self.get_member_accounts(member_id):
-                    total += self.electricity_bills[
-                        hash((member_id, account_id, given_date))].total
+                    eb = self.electricity_bills[
+                        hash((member_id, account_id, given_date))]
+                    total += eb.total
+                    units += eb.units
+                return total, units
             else:
-                return self.electricity_bills[
-                    hash((member_id, account_id, given_date))].total
+                eb = self.electricity_bills[
+                    hash((member_id, account_id, given_date))]
+                return eb.total, eb.units
         elif energy_source == 'gas':
             if all_accounts:
                 for account_id in self.get_member_accounts(member_id):
-                    total += self.gas_bills[
-                        hash((member_id, account_id, given_date))].total
+                    gb = self.gas_bills[
+                        hash((member_id, account_id, given_date))]
+                    total += gb.total
+                    units += gb.units
+                return total, units
             else:
-                return self.electricity_bills[
-                    hash((member_id, account_id, given_date))].total
+                gb = self.gas_bills[
+                    hash((member_id, account_id, given_date))]
+                return gb.total, gb.units

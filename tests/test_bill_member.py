@@ -29,8 +29,8 @@ class TestBillMember(object):
             assert amount == 27.57
             assert kwh == 167
         if bill_date == '2017-09-30':
-            assert amount == 29.59
-            assert kwh == 186
+            assert amount == 38.19
+            assert kwh == 223
         if bill_date == '2017-10-31':
-            assert amount == 12.75
-            assert kwh == 43
+            assert amount == 31.24
+            assert kwh == 245
