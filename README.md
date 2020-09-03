@@ -1,5 +1,7 @@
 # Energy usage calculations
 
+[![CircleCI](https://circleci.com/gh/KamilWo/energy-usage/tree/master.svg?style=shield)](https://circleci.com/gh/KamilWo/energy-usage/tree/master)
+
 Application calculates bill based on tariff and received JSON data payload,
 containing electricity usage - stored in `data` folder: `readings.json`.
 
