@@ -3,7 +3,7 @@ from collections import defaultdict
 from datetime import date, datetime
 from dataclasses import dataclass, field
 from typing import Dict, Optional
-from .utils import count_month_days
+from .utils import count_month_days, apply_tariff
 
 
 # TODO: in v2.0 I would like to use database framework (e.g. SQLAlchemy)
@@ -80,6 +80,7 @@ class BillDatabase:
 
         :returns: None
         """
+
         self.members.add(member)
 
     def is_member(self, member_id: str) -> bool:
@@ -90,6 +91,7 @@ class BillDatabase:
         :returns: True if Member is in the database, False if doesn't exist.
         :rtype: bool
         """
+
         return member_id in [member.member_id for member in self.members]
 
     def add_account(self, account: Account) -> None:
@@ -99,6 +101,7 @@ class BillDatabase:
 
         :returns: None
         """
+
         self.accounts += [account]
 
     def is_account(self, account_id: str) -> bool:
@@ -109,6 +112,7 @@ class BillDatabase:
         :returns: True if Account is in the database, False if doesn't exist.
         :rtype: bool
         """
+
         return account_id in [acc.account_id for acc in self.accounts]
 
     def get_member_accounts(self, member_id: str) -> list:
@@ -119,6 +123,7 @@ class BillDatabase:
         :returns: Accounts for specific Member.
         :rtype: list
         """
+
         return [acc.account_id for acc in self.accounts
                 if acc.member_id == member_id]
 
@@ -129,6 +134,7 @@ class BillDatabase:
 
         :returns: None
         """
+
         self.electricity_bills[
             hash((el_bill.member.member_id, el_bill.account.account_id,
                   el_bill.bill_date))
@@ -141,6 +147,7 @@ class BillDatabase:
 
         :returns: None
         """
+
         self.gas_bills[
             hash((gas_bill.member.member_id, gas_bill.account.account_id,
                   gas_bill.bill_date))
@@ -159,110 +166,87 @@ class BillDatabase:
 
         :returns: None
         """
+
         if member and account:
             if energy_source == 'electricity' and energy_source in sources:
                 electricity_readings = sources[energy_source]
-                prev_reading = None
-                prev_month_date = ""
-                prev_month_units = 0
+                previous_reading = None
                 for er in electricity_readings:
                     # It's necessary to find first month's units
                     # and follow them linearly
-                    if prev_reading:
-                        prev_month_date, prev_month_units = \
+                    if previous_reading:
+                        eom_date, units_delta, days_delta = \
                             self.calculate_units(
-                                prev_eom_cumulative=prev_month_units,
-                                prev_eom_date=prev_month_date,
-                                prev_cumulative=prev_reading['cumulative'],
-                                prev_date=prev_reading['readingDate'][:10],
-                                current_cumulative=er['cumulative'],
-                                current_date=er['readingDate'][:10],
-                                days_in_month=count_month_days(
-                                    given_date=er['readingDate'][:10]
-                                )
+                                previous_reading=previous_reading,
+                                current_reading=er
                             )
                         self.add_electricity_bill(
                             ElectricityBill(
                                 member=member,
                                 account=account,
-                                bill_date=date.fromisoformat(
-                                    er['readingDate'][:10]),
-                                units=0,
-                                total=0.0
+                                bill_date=eom_date,
+                                units=units_delta,
+                                total=apply_tariff(
+                                    energy_source='electricity',
+                                    units=units_delta,
+                                    amount_of_days=days_delta
+                                )
                             )
                         )
-                    prev_reading = er
+                    previous_reading = er
             elif energy_source == 'gas' and energy_source in sources:
                 gas_readings = sources[energy_source]
-                prev_reading = None
-                prev_month_date = ""
-                prev_month_units = 0
+                previous_reading = None
                 for gr in gas_readings:
                     # It's necessary to find first month's units
                     # and follow them linearly
-                    if prev_reading:
-                        prev_month_date, prev_month_units = \
+                    if previous_reading:
+                        eom_date, units_delta, days_delta = \
                             self.calculate_units(
-                                prev_eom_cumulative=prev_month_units,
-                                prev_eom_date=prev_month_date,
-                                prev_cumulative=prev_reading['cumulative'],
-                                prev_date=prev_reading['readingDate'],
-                                current_cumulative=gr['cumulative'],
-                                current_date=gr['readingDate'][:10],
-                                days_in_month=count_month_days(
-                                    given_date=gr['readingDate'][:10]
+                                previous_reading=previous_reading,
+                                current_reading=gr
+                            )
+                        self.add_gas_bill(
+                            GasBill(
+                                member=member,
+                                account=account,
+                                bill_date=eom_date,
+                                units=units_delta,
+                                total=apply_tariff(
+                                    energy_source='electricity',
+                                    units=units_delta,
+                                    amount_of_days=days_delta
                                 )
                             )
-                    self.add_gas_bill(
-                        GasBill(
-                            member=member,
-                            account=account,
-                            bill_date=date.fromisoformat(
-                                gr['readingDate']),
-                            units=0,
-                            total=0.0
                         )
-                    )
-                    prev_reading = gr
+                    previous_reading = gr
 
     @classmethod
-    def calculate_units(cls, prev_eom_cumulative: int, prev_eom_date: str,
-                        prev_cumulative: int, prev_date: str,
-                        current_cumulative: int, current_date: str,
-                        days_in_month) -> tuple:
-        """ Calculates estimated decimal number of units.
+    def calculate_units(cls, previous_reading: dict,
+                        current_reading: dict) -> tuple:
+        """ Calculates estimated decimal number of units in current month
 
-        :param int prev_eom_cumulative: Number of units from the end
-            of previous month.
-        :param str prev_eom_date: Previous month's end date.
-        :param int prev_cumulative: Number of units from the previous month.
-        :param str prev_date: Previous month's readingDate date.
-        :param str prev_date: Previous month's readingDate date.
-        :param int current_cumulative: Number of units from the current month.
-        :param str current_date: Current month's readingDate date.
-        :param int days_in_month: Number of days in the current month.
+        designated by `current_date`. It requires data from previous month.
+
+        :param int previous_reading: Number of units from the previous month.
+        :param str current_reading: Previous month's readingDate date.
 
         :returns: End of the month date and units for the end of the month.
         :rtype: tuple
         """
-        if prev_eom_cumulative and prev_eom_date:
-            units_delta = current_cumulative - prev_cumulative
-        else:
-            units_delta = current_cumulative - prev_cumulative
 
-        curr_date = datetime.combine(
-            date.fromisoformat(current_date[:10]), datetime.min.time()
+        prev_date = date.fromisoformat(previous_reading['readingDate'][:10])
+        curr_date = date.fromisoformat(current_reading['readingDate'][:10])
+        days_delta = (curr_date - prev_date).days
+        eom_date = date(
+            year=prev_date.year,
+            month=prev_date.month,
+            day=monthrange(prev_date.year,
+                           prev_date.month)[1]
         )
-        delta = curr_date - datetime.combine(
-            date.fromisoformat(prev_date[:10]),
-            datetime.min.time()
-        )
-        # End of the month date
-        eom_date = curr_date.replace(
-            day=monthrange(curr_date.year, curr_date.month)[1]
-        )
-        units = units_delta / delta.days * days_in_month
-        return eom_date, units
+        units_delta = current_reading['cumulative'] - \
+                      previous_reading['cumulative']
+        return eom_date, units_delta, days_delta
 
     def get_bills_amount(self, energy_source: str, member_id: str,
                          account_id: str, given_date: date,

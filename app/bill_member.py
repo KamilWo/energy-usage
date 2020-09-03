@@ -113,7 +113,7 @@ def calculate_bill(member_id: Optional[str] = None,
 
     # Rounding bill result to full £
     return round(apply_tariff(
-        billing_type='electricity',
+        energy_source='electricity',
         units=units,
         amount_of_days=amount_of_days)
     ), units

@@ -6,11 +6,11 @@ from .exceptions import IncorrectDateType
 from .tariff import BULB_TARIFF
 
 
-def apply_tariff(billing_type: str, units: float,
+def apply_tariff(energy_source: str, units: float,
                  amount_of_days: int) -> float:
     """ Applies tariff to the units.
 
-    :param str billing_type: Can be `electricity` or `gas`
+    :param str energy_source: Can be `electricity` or `gas`
     :param float units: number of units in the current month
     :param int amount_of_days: number of days in a month.
 
@@ -18,8 +18,8 @@ def apply_tariff(billing_type: str, units: float,
     :rtype: float
     """
 
-    unit_rate = BULB_TARIFF[billing_type]['unit_rate']
-    standard_charge = BULB_TARIFF[billing_type]['standing_charge']
+    unit_rate = BULB_TARIFF[energy_source]['unit_rate']
+    standard_charge = BULB_TARIFF[energy_source]['standing_charge']
 
     # Bill calculations: units and standard charge
     total_bill = units * unit_rate
