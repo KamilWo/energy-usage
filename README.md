@@ -5,6 +5,19 @@
 Application calculates bill based on tariff and received JSON data payload,
 containing electricity usage - stored in `data` folder: `readings.json`.
 
+## Assumptions provided in the instructions
+
+You can assume:
+
+- All times are UTC.
+- We're only dealing with £ denominated billing.
+- You only need to handle electricity and gas billing.
+- Energy is consumed linearly.
+- The billing date is the last day of the month.
+- Readings are always taken at midnight.
+- There is only one meter reading per billing period.
+- The JSON file structure will remain the same in any follow on exercise.
+
 ## Setup
 
 Python3.8 installation instructions: https://docs.python.org/3/using/index.html
