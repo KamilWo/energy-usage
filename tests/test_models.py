@@ -26,9 +26,9 @@ class TestModels(object):
     )
     def test_member_accounts(
         self,
-        member_id,
-        name,
-        accounts
+        member_id: str,
+        name: str,
+        accounts: [Account]
     ):
         member = Member(
             member_id=member_id,

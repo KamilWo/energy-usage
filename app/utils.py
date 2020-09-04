@@ -10,9 +10,10 @@ def apply_tariff(energy_source: str, units: float,
                  amount_of_days: int) -> float:
     """ Applies tariff to the units.
 
-    :param str energy_source: Can be `electricity` or `gas`
-    :param float units: number of units in the current month
-    :param int amount_of_days: number of days in a month.
+    :param str energy_source: Can be `electricity` or `gas`.
+    :param float units: Number of units in the current month.
+    :param int amount_of_days: Number of days calculated as delta
+        between readings.
 
     :returns: Total bill in £
     :rtype: float
