@@ -62,7 +62,7 @@ def prepare_database(data_source: Optional[str] = None) -> BillDatabase:
 def calculate_bill(member_id: Optional[str] = None,
                    account_id: Optional[str] = None,
                    bill_date: Optional[str] = None,
-                   energy_source='electricity') -> (float, float):
+                   energy_source: Optional[str] = None) -> (float, float):
     """ Computes the customer bill.
 
     :param str member_id: Given Customer (member) identifier.
@@ -114,27 +114,34 @@ def calculate_bill(member_id: Optional[str] = None,
 
 
 def calculate_and_print_bill(member_id: str, account: str, bill_date: str,
-                             energy_source: str) -> None:
+                             energy_source: str,
+                             testing: Optional[bool] = None) -> Optional[tuple]:
     """ Computes the customer bill and then prints the result to screen.
 
     Account is an optional argument - I could bill for one account or many.
     There's no need to refactor this function.
 
-    :param str member_id: Customer
-    :param str account: Account
-    :param str bill_date: Date of the bill
+
+    :param str member_id: Customer provided as a parameter (optional).
+    :param str account: Account provided as a parameter  (optional).
+    :param str bill_date: Date of the bill provided as a parameter  (optional).
     :param str energy_source: Type of the billing, can be `electricity`
         or `gas`.
+    :param bool testing: Added optional function parameter
+        for testing purposes only.
 
-    :returns: None
+    :returns: Optional[tuple]
     """
 
     member_id = member_id or 'member-123'
     bill_date = bill_date or '2017-08-31'
     account = account or 'ALL'
     energy_source = energy_source or 'electricity'
-    amount, kwh = calculate_bill(member_id, account, bill_date)
+    amount, kwh = calculate_bill(member_id, account, bill_date, energy_source)
     print(f'Hello {member_id}!')
     print(f'Your {energy_source} bill for {account} on {bill_date} is '
           f'£{amount}')
     print(f'based on {kwh}kWh of usage in the last month.')
+
+    if testing:
+        return amount, kwh

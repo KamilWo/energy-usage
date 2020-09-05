@@ -11,23 +11,22 @@ from app.models import (
     GasBill,
     Member,
 )
-from datetime import datetime
 
 
 class TestBillMember(object):
 
     @pytest.mark.parametrize(
-        ('member_id', 'account_id', 'bill_date',
+        ('member_id', 'account_id', 'bill_date', 'energy_source',
          'expected_amount', 'expected_kwh'),
         (
-            ('member-123', 'account-abc', '2017-07-31', 27.57, 167),
-            ('member-123', 'ALL', '2017-07-31', 27.57, 167),
-            ('member-123', 'ALL', '2017-08-31', 9.86, 62),
-            ('member-123', 'account-abc', '2017-09-30', 38.19, 223),
-            ('member-123', 'account-abc', '2017-10-31', 31.24, 245),
-            ('member-123', 'ALL', '2017-10-31', 31.24, 245),
-            ('member-123', 'account-abc', '2018-01-31', 46.42, 333),
-            ('member-123', 'ALL', '2018-01-31', 46.42, 333),
+            ('member-123', 'account-abc', '2017-07-31', 'electricity', 27.57, 167),
+            ('member-123', 'ALL', '2017-07-31', 'electricity', 27.57, 167),
+            ('member-123', 'ALL', '2017-08-31', 'electricity', 9.86, 62),
+            ('member-123', 'account-abc', '2017-09-30', 'electricity', 38.19, 223),
+            ('member-123', 'account-abc', '2017-10-31', 'electricity', 31.24, 245),
+            ('member-123', 'ALL', '2017-10-31', 'electricity', 31.24, 245),
+            ('member-123', 'account-abc', '2018-01-31', 'electricity', 46.42, 333),
+            ('member-123', 'ALL', '2018-01-31', 'electricity', 46.42, 333),
         )
     )
     def test_calculate_bill(
@@ -35,6 +34,7 @@ class TestBillMember(object):
         member_id: str,
         account_id: str,
         bill_date: str,
+        energy_source: str,
         expected_amount: float,
         expected_kwh: int
     ):
@@ -44,17 +44,19 @@ class TestBillMember(object):
         :param str account_id: Given Account identifier, parametrised.
         :param str bill_date: Date of the bill (end of the month),
             parametrised.
+        :param str energy_source: Type of the billing, can be `electricity`
+            or `gas`, parametrised.
         :param float expected_amount: Calculated and expected amount of
             bill, parametrised.
         :param int expected_kwh: Calculated and expected amount of kwh
             units (usage), parametrised.
-
         """
 
         assert calculate_bill(
             member_id=member_id,
             account_id=account_id,
-            bill_date=bill_date
+            bill_date=bill_date,
+            energy_source=energy_source
         ) == (expected_amount, expected_kwh)
 
     @pytest.mark.parametrize(
@@ -64,10 +66,11 @@ class TestBillMember(object):
         )
     )
     def test_prepare_database(self, json_file_name: str):
-        """ Testing preparation of the database.
+        """ Testing preparation of the database and important functions.
 
         :param str json_file_name: Path to the test JSON file, parametrised.
         """
+
         db = prepare_database(data_source=json_file_name)
 
         assert db.members == {
@@ -500,3 +503,36 @@ class TestBillMember(object):
                 member=Member(member_id='member-124', accounts=set(), name='member-124'),
                 account=Account(account_id='account-bce', member_id='member-124'), bill_date='2018-03-31', units=324,
                 total=22.14, billing_type='gas')}
+
+    @pytest.mark.parametrize(
+        ('member_id', 'account', 'bill_date', 'energy_source',
+         'testing', 'expected_amount', 'expected_kwh'),
+        (
+            ('member-123', 'account-abc', '2017-03-31', 'electricity', True, 25.81, 179),
+            ('member-123', 'account-abc', '2017-04-30', 'electricity', True, 34.68, 243),
+            ('member-123', 'account-abc', '2017-05-31', 'electricity', True, 42.09, 268),
+            ('member-123', 'account-abc', '2017-06-30', 'electricity', True, 32.43, 183),
+            ('member-123', 'account-abc', '2017-07-31', 'electricity', True, 27.57, 167),
+            ('member-123', 'account-abc', '2017-08-31', 'electricity', True, 9.86, 62),
+            ('member-123', 'account-abc', '2017-09-30', 'electricity', True, 38.19, 223),
+            ('member-123', 'account-abc', '2017-10-31', 'electricity', True, 31.24, 245),
+            ('member-123', 'account-abc', '2017-11-30', 'electricity', True, 57.85, 367),
+            ('member-123', 'account-abc', '2017-12-31', 'electricity', True, 34.33, 240),
+            ('member-123', 'account-abc', '2018-01-31', 'electricity', True, 46.42, 333),
+            ('member-123', 'account-abc', '2018-02-28', 'electricity', True, 27.87, 186),
+            ('member-123', 'account-abc', '2018-03-31', 'electricity', True, 50.01, 324),
+        )
+    )
+    def test_calculate_and_print_bill(self, member_id: str, account: str,
+                                      bill_date: str, energy_source: str,
+                                      testing: bool, expected_amount: float,
+                                      expected_kwh: int):
+        """ """
+
+        assert (expected_amount, expected_kwh) == calculate_and_print_bill(
+            member_id=member_id,
+            account=account,
+            bill_date=bill_date,
+            energy_source=energy_source,
+            testing=testing
+        )
