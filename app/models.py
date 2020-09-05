@@ -55,12 +55,18 @@ class ElectricityBill(BaseBill):
 
     billing_type: str = "electricity"
 
+    def __hash__(self):
+        return BaseBill.__hash__(self)
+
 
 @dataclass
 class GasBill(BaseBill):
     """ Represents Bulb Customer's gas bill for the given date. """
 
     billing_type: str = "gas"
+
+    def __hash__(self):
+        return BaseBill.__hash__(self)
 
 
 @dataclass
