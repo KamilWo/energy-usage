@@ -160,7 +160,21 @@ class TestBillMember(object):
                                       bill_date: str, energy_source: str,
                                       testing: bool, expected_amount: float,
                                       expected_kwh: int):
-        """ """
+        """ Testing calculations and printing bill.
+
+        :param str member_id: Customer provided as a parameter (optional),
+            parametrised.
+        :param str account: Account provided as a parameter  (optional),
+            parametrised.
+        :param str bill_date: Date of the bill provided as a parameter
+            (optional), parametrised.
+        :param str energy_source: Type of the billing, can be `electricity`
+            or `gas`, parametrised.
+        :param bool testing: Flag for testing, parametrised.
+        :param float expected_amount: Calculated expected bill amount,
+            parametrised.
+        :param int expected_kwh: Calculated amount of kwh units, parametrised.
+        """
 
         assert (expected_amount, expected_kwh) == calculate_and_print_bill(
             member_id=member_id,

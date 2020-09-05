@@ -122,7 +122,7 @@ def calculate_and_print_bill(member_id: str, account: str, bill_date: str,
 
     :param str member_id: Customer provided as a parameter (optional).
     :param str account: Account provided as a parameter  (optional).
-    :param str bill_date: Date of the bill provided as a parameter  (optional).
+    :param str bill_date: Date of the bill provided as a parameter (optional).
     :param str energy_source: Type of the billing, can be `electricity`
         or `gas`.
     :param bool testing: Added optional function parameter
