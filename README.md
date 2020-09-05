@@ -60,7 +60,7 @@ E.g.:
 Examples of running specific tests:
 
     pipenv run pytest tests/test_bill_member.py
-    pipenv run pytest tests/test_bill_member.py::TestBillMember::test_calculate_bill_for_august_2017
+    pipenv run pytest tests/test_bill_member.py::TestBillMember::test_calculate_bill
 
 ## CircleCI
 

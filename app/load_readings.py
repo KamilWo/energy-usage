@@ -25,3 +25,23 @@ def get_readings():
         logging.error(f'Error: Could not read {file_path}.')
 
     return readings
+
+
+def get_new_readings(data_source: str):
+    """ Loads readings from provided file system.
+
+    :returns: Current readings.
+    :rtype: dict
+    """
+
+    file_path = os.path.join('data', data_source)
+    try:
+
+        with open(file_path, 'r') as f:
+            readings = json.load(f)
+    except FileNotFoundError:
+        logging.error(f'Error: {file_path} was not found.')
+    except IOError:
+        logging.error(f'Error: Could not read {file_path}.')
+
+    return readings

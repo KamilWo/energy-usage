@@ -5,7 +5,7 @@ from .exceptions import (
     UnknownBillingType,
     UnknownMember
 )
-from .load_readings import get_readings
+from .load_readings import get_readings, get_new_readings
 from .models import (
     Account,
     BillDatabase,
@@ -14,14 +14,17 @@ from .models import (
 from typing import Optional
 
 
-def prepare_database() -> BillDatabase:
+def prepare_database(data_source: Optional[str] = None) -> BillDatabase:
     """ Prepares database from readings.
 
     :returns: Database of the bills.
     :rtype: BillDatabase
     """
     # Retrieve readings
-    readings = get_readings()
+    if data_source:
+        readings = get_new_readings(data_source)
+    else:
+        readings = get_readings()
 
     # Initialise database
     db = BillDatabase()

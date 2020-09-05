@@ -28,6 +28,9 @@ class Account:
     account_id: str
     member_id: str
 
+    def __hash__(self):
+        return hash(f'{self.account_id}_{self.member_id}')
+
 
 @dataclass
 class BaseBill:
@@ -35,16 +38,13 @@ class BaseBill:
 
     member: Member
     account: Account
-    bill_date: date
+    bill_date: str
     units: int
     total: float
 
     def __hash__(self):
-        return hash((
-            self.member.member_id,
-            self.account.account_id,
-            self.bill_date.strftime(DATE_FORMAT)
-        ))
+        return hash(f'{self.member.member_id}_{self.account.account_id}_'
+                    f'{self.bill_date}')
 
 
 @dataclass
@@ -135,8 +135,8 @@ class BillDatabase:
         """
 
         self.electricity_bills[
-            hash((el_bill.member.member_id, el_bill.account.account_id,
-                  el_bill.bill_date))
+            f'{el_bill.member.member_id}_{el_bill.account.account_id}_'
+            f'{el_bill.bill_date}'
         ] = el_bill
 
     def add_gas_bill(self, gas_bill: GasBill) -> None:
@@ -148,8 +148,8 @@ class BillDatabase:
         """
 
         self.gas_bills[
-            hash((gas_bill.member.member_id, gas_bill.account.account_id,
-                  gas_bill.bill_date))
+            f'{gas_bill.member.member_id}_{gas_bill.account.account_id}_'
+            f'{gas_bill.bill_date}'
         ] = gas_bill
 
     def process_energy_sources(self, energy_source: str, sources: dict,
@@ -209,10 +209,10 @@ class BillDatabase:
                             GasBill(
                                 member=member,
                                 account=account,
-                                bill_date=eom_date,
+                                bill_date=eom_date.strftime(DATE_FORMAT),
                                 units=units_delta,
                                 total=apply_tariff(
-                                    energy_source='electricity',
+                                    energy_source='gas',
                                     units=units_delta,
                                     amount_of_days=days_delta
                                 )
@@ -270,23 +270,23 @@ class BillDatabase:
             if all_accounts:
                 for account_id in self.get_member_accounts(member_id):
                     eb = self.electricity_bills[
-                        hash((member_id, account_id, given_date))]
+                        f'{member_id}_{account_id}_{given_date}']
                     total += eb.total
                     units += eb.units
                 return total, units
             else:
                 eb = self.electricity_bills[
-                    hash((member_id, account_id, given_date))]
+                    f'{member_id}_{account_id}_{given_date}']
                 return eb.total, eb.units
         elif energy_source == 'gas':
             if all_accounts:
                 for account_id in self.get_member_accounts(member_id):
                     gb = self.gas_bills[
-                        hash((member_id, account_id, given_date))]
+                        f'{member_id}_{account_id}_{given_date}']
                     total += gb.total
                     units += gb.units
                 return total, units
             else:
                 gb = self.gas_bills[
-                    hash((member_id, account_id, given_date))]
+                    f'{member_id}_{account_id}_{given_date}']
                 return gb.total, gb.units
