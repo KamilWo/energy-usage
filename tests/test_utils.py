@@ -1,5 +1,6 @@
 import pytest
 
+from app.exceptions import IncorrectDateType
 from app.utils import (
     apply_tariff,
     count_month_days,
@@ -60,6 +61,8 @@ class TestUtils(object):
         :param int expected_count: Amount of days in a month, parametrised.
         """
         assert count_month_days(given_date=given_date) == expected_count
+        with pytest.raises(IncorrectDateType):
+            count_month_days(given_date='2017')
 
     @pytest.mark.parametrize(
         ('given_date', 'expected_eom_date'),
@@ -80,3 +83,5 @@ class TestUtils(object):
         """
         assert end_of_month_date(given_date=given_date) == \
                date.fromisoformat(expected_eom_date)
+        with pytest.raises(IncorrectDateType):
+            end_of_month_date(given_date='2017')
