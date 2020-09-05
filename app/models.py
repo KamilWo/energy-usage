@@ -2,6 +2,7 @@ from calendar import monthrange
 from .consts import DATE_FORMAT
 from datetime import date
 from dataclasses import dataclass, field
+from typing import Optional
 from .utils import apply_tariff
 
 
@@ -255,16 +256,16 @@ class BillDatabase:
 
     def get_bills_amount(self, energy_source: str, member_id: str,
                          account_id: str, given_date: str,
-                         all_accounts=None) -> tuple:
+                         all_accounts: Optional[str] = None) -> tuple:
         """ Retrieve electricity bills for member and account.
 
-        :param energy_source: Type of source of energy for which bill
+        :param str energy_source: Type of source of energy for which bill
             is being calculated.
-        :param member_id: Member identifier.
-        :param account_id: Account identifier.
-        :param given_date: Specified date of the bill.
-        :param all_accounts: If specified, all accounts for the member
-            will be calculated.
+        :param str member_id: Member identifier.
+        :param str account_id: Account identifier.
+        :param str given_date: Specified date of the bill.
+        :param Optional[str] all_accounts: If specified, all accounts
+            for the member will be calculated.
 
         :returns: Total bill value and total number of units
         :rtype: tuple
@@ -273,7 +274,7 @@ class BillDatabase:
         total = 0.0
         units = 0
         if energy_source == 'electricity':
-            if all_accounts:
+            if all_accounts == 'ALL':
                 for account_id in self.get_member_accounts(member_id):
                     eb = self.electricity_bills[
                         f'{member_id}_{account_id}_{given_date}']
@@ -285,7 +286,7 @@ class BillDatabase:
                     f'{member_id}_{account_id}_{given_date}']
                 return eb.total, eb.units
         elif energy_source == 'gas':
-            if all_accounts:
+            if all_accounts == 'ALL':
                 for account_id in self.get_member_accounts(member_id):
                     gb = self.gas_bills[
                         f'{member_id}_{account_id}_{given_date}']
