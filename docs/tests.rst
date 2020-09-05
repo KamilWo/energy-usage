@@ -4,6 +4,14 @@ tests package
 Submodules
 ----------
 
+tests.consts module
+-------------------
+
+.. automodule:: tests.consts
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 tests.test\_bill\_member module
 -------------------------------
 
@@ -12,10 +20,26 @@ tests.test\_bill\_member module
    :undoc-members:
    :show-inheritance:
 
+tests.test\_load\_readings module
+---------------------------------
+
+.. automodule:: tests.test_load_readings
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 tests.test\_models module
 -------------------------
 
 .. automodule:: tests.test_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_utils module
+------------------------
+
+.. automodule:: tests.test_utils
    :members:
    :undoc-members:
    :show-inheritance:

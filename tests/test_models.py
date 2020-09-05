@@ -111,6 +111,7 @@ class TestModels(object):
                               expected_units: int,
                               all_accounts: Optional[str]):
         """ Testing BilLDatabase.get_bills_amount method.
+
         :param str energy_source: Type of source of energy for which bill
             is being calculated, parametrised.
         :param str member_id: Member identifier, parametrised.

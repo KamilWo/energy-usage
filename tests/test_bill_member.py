@@ -50,6 +50,7 @@ class TestBillMember(object):
         expected_kwh: int
     ):
         """ Testing calculate_bill.
+
         :param str member_id: Given Customer (member) identifier,
             parametrised.
         :param str account_id: Given Account identifier, parametrised.
