@@ -95,15 +95,20 @@ class TestModels(object):
         ('energy_source', 'member_id', 'account_id', 'given_date',
          'expected_total_amount', 'expected_units', 'all_accounts'),
         (
-            ('electricity', 'member-123', 'account-abc', '2017-08-31', 19.72, 124, 'ALL'),
-            ('electricity', 'member-123', 'account-abc', '2017-08-31', 9.86, 62, False),
-            ('gas', 'member-123', 'account-abc', '2017-08-31', 12.58, 124, 'ALL'),
-            ('gas', 'member-123', 'account-abc', '2017-08-31', 6.29, 62, False),
+            ('electricity', 'member-123', 'account-abc', '2017-08-31',
+             19.72, 124, 'ALL'),
+            ('electricity', 'member-123', 'account-abc', '2017-08-31',
+             9.86, 62, False),
+            ('gas', 'member-123', 'account-abc', '2017-08-31', 12.58,
+             124, 'ALL'),
+            ('gas', 'member-123', 'account-abc', '2017-08-31', 6.29,
+             62, False),
         )
     )
     def test_get_bills_amount(self, energy_source: str, member_id: str,
                               account_id: str, given_date: str,
-                              expected_total_amount: float, expected_units: int,
+                              expected_total_amount: float,
+                              expected_units: int,
                               all_accounts: Optional[str]):
         """ Testing BilLDatabase.get_bills_amount method.
         :param str energy_source: Type of source of energy for which bill

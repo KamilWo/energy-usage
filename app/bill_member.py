@@ -5,7 +5,7 @@ from .exceptions import (
     UnknownBillingType,
     UnknownMember
 )
-from .load_readings import get_readings, get_new_readings
+from .load_readings import get_readings
 from .models import (
     Account,
     BillDatabase,
@@ -21,10 +21,7 @@ def prepare_database(data_source: Optional[str] = None) -> BillDatabase:
     :rtype: BillDatabase
     """
     # Retrieve readings
-    if data_source:
-        readings = get_new_readings(data_source)
-    else:
-        readings = get_readings()
+    readings = get_readings(data_source)
 
     # Initialise database
     db = BillDatabase()
@@ -115,7 +112,8 @@ def calculate_bill(member_id: Optional[str] = None,
 
 def calculate_and_print_bill(member_id: str, account: str, bill_date: str,
                              energy_source: str,
-                             testing: Optional[bool] = None) -> Optional[tuple]:
+                             testing: Optional[bool] = None
+                             ) -> Optional[tuple]:
     """ Computes the customer bill and then prints the result to screen.
 
     Account is an optional argument - I could bill for one account or many.
