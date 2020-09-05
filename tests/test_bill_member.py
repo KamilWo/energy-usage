@@ -69,8 +69,7 @@ class TestBillMember(object):
         :param str json_file_name: Path to the test JSON file, parametrised.
         """
         db = prepare_database(data_source=json_file_name)
-        # print(db.electricity_bills)
-        print(db.gas_bills)
+
         assert db.members == {
             Member(member_id='member-123', accounts=set(), name='member-123'),
             Member(member_id='member-124', accounts=set(), name='member-124')
